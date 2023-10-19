@@ -1,31 +1,28 @@
-const express = require("express")
-var app = express();
-var server = app.listen(3000 , ()=>   console.log("staring 3000"));
-const io=require('socket.io')(server,{
-    cors: {
-        origin: '*',
-      }
-});
+const express = require('express');
+const mongodb = require('mongodb');
+const cors = require('cors');
 
-const users = {};
+//database connecting
+require('./db/.config.js')
 
-io.on('connection', socket => {
 
-    socket.on('new-user-joined', name => {
-        users[socket.id] = name;
-        socket.broadcast.emit('user-joined',name);
-        socket.emit('disply',name);
-    });
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    socket.on('send', message =>{
-        socket.broadcast.emit('receive',{message: message, name: users[socket.id]})
-    });
+const PORT = 4500 || process.env.PORT;
 
-    socket.on('disconnect', message=>{
-        socket.broadcast.emit('left', users[socket.id]);
-        delete users[socket.id];
-    })
 
-  
+//router
+const postRouter = require('./router/postRouter.js');
+const userRouter = require('./router/userRouter.js');
+
+//post
+app.use('/post', postRouter);
+
+//user
+app.use('/user' ,userRouter);
+
+app.listen(PORT , ()=>{
+     console.log(`tWitter server start on : ${PORT}`);
 })
-
