@@ -3,7 +3,7 @@ const express = require('express');
 // const cors = require('cors');
 
 //database connecting
-require('./db/.config.js')
+// require('./db/.config.js')
 
 
 const app = express();
